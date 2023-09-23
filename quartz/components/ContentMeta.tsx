@@ -5,7 +5,7 @@ import type { JSX } from "preact"
 import { format as formatDateFn, formatISO } from "date-fns"
 
 const TimeMeta = ({ value }: { value: Date }) => (
-  <time dateTime={formatISO(value)} title={formatDateFn(value, "ccc")}>
+  <time dateTime={formatISO(value)} title={formatDateFn(value, "ccc w")}>
     {formatDateFn(value, "MMM do yyyy")}
   </time>
 )
