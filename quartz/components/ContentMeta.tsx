@@ -1,12 +1,13 @@
-import { formatDate, getDate } from "./Date"
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import readingTime from "reading-time"
-
+import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import type { JSX } from "preact"
-import { formatDistanceToNow } from "date-fns"
+
+import { format as formatDateFn, formatISO } from "date-fns"
 
 const TimeMeta = ({ value }: { value: Date }) => (
-  <time dateTime={formatDate(value)}>{formatDistanceToNow(value)} ago</time>
+  <time dateTime={formatISO(value)} title={formatDateFn(value, "ccc")}>
+    {formatDateFn(value, "MMM do yyyy")}
+  </time>
 )
 
 export default (() => {
