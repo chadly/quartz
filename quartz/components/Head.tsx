@@ -12,9 +12,6 @@ export default (() => {
     const path = url.pathname as FullSlug
     const baseDir = fileData.slug === "404" ? path : pathToRoot(fileData.slug!)
 
-    const ogImagePath = `https://${cfg.baseUrl}/static/universe-brain.jpg`
-    const manifestPath = `https://${cfg.baseUrl}/static/site.webmanifest`
-
     return (
       <head>
         <title>{title}</title>
@@ -22,11 +19,13 @@ export default (() => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        {cfg.baseUrl && <meta property="og:image" content={ogImagePath} />}
+        {cfg.baseUrl && <meta property="og:image" content="/static/universe-brain.jpg" />}
         <meta property="og:width" content="1200" />
         <meta property="og:height" content="675" />
 
-        <link rel="manifest" href={manifestPath} />
+        <link rel="icon" href="/static/favicon.ico" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
+        <link rel="manifest" href="/static/site.webmanifest" />
 
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
