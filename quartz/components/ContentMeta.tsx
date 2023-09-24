@@ -37,6 +37,15 @@ export default (() => {
 
       segments.push(<span>⏲ {timeTaken}</span>)
 
+      segments.push(
+        <a
+          href={`https://github.com/chadly/garden/commits/v4/${fileData.filePath}`}
+          target="_blank"
+        >
+          🗓️ History
+        </a>,
+      )
+
       return (
         <p class="content-meta">
           {segments.map((meta, idx) => (
