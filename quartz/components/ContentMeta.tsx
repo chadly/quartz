@@ -1,8 +1,23 @@
-import readingTime from "reading-time"
-import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import type { JSX } from "preact"
-
 import { format as formatDateFn, formatISO } from "date-fns"
+import { QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import readingTime from "reading-time"
+import { classNames } from "../util/lang"
+import { i18n } from "../i18n"
+import { JSX } from "preact"
+import style from "./styles/contentMeta.scss"
+
+interface ContentMetaOptions {
+  /**
+   * Whether to display reading time
+   */
+  showReadingTime: boolean
+  showComma: boolean
+}
+
+const defaultOptions: ContentMetaOptions = {
+  showReadingTime: true,
+  showComma: true,
+}
 
 const TimeMeta = ({ value }: { value: Date }) => (
   <time dateTime={formatISO(value)} title={formatDateFn(value, "ccc w")}>
@@ -10,12 +25,15 @@ const TimeMeta = ({ value }: { value: Date }) => (
   </time>
 )
 
-export default (() => {
-  function ContentMetadata({ cfg, fileData }: QuartzComponentProps) {
+export default ((opts?: Partial<ContentMetaOptions>) => {
+  // Merge options with defaults
+  const options: ContentMetaOptions = { ...defaultOptions, ...opts }
+
+  function ContentMetadata({ cfg, fileData, displayClass }: QuartzComponentProps) {
     const text = fileData.text
+
     if (text) {
       const segments: JSX.Element[] = []
-      const { text: timeTaken, words: _words } = readingTime(text)
 
       if (fileData.dates) {
         if (fileData.dates.created) {
@@ -35,11 +53,18 @@ export default (() => {
         }
       }
 
-      segments.push(<span>⏲ {timeTaken}</span>)
+      // Display reading time if enabled
+      if (options.showReadingTime) {
+        const { minutes, words: _words } = readingTime(text)
+        const displayedTime = i18n(cfg.locale).components.contentMeta.readingTime({
+          minutes: Math.ceil(minutes),
+        })
+        segments.push(<span>⏲ {displayedTime}</span>)
+      }
 
       segments.push(
         <a
-          href={`https://github.com/chadly/garden/commits/v4/${fileData.filePath}`}
+          href={`https://github.com/chadly/garden/commits/master/${fileData.filePath}`}
           target="_blank"
         >
           🗓️ History
@@ -47,13 +72,8 @@ export default (() => {
       )
 
       return (
-        <p class="content-meta">
-          {segments.map((meta, idx) => (
-            <>
-              {meta}
-              {idx < segments.length - 1 ? <br /> : null}
-            </>
-          ))}
+        <p show-comma={options.showComma} class={classNames(displayClass, "content-meta")}>
+          {segments}
         </p>
       )
     } else {
@@ -61,16 +81,7 @@ export default (() => {
     }
   }
 
-  ContentMetadata.css = `
-  .content-meta {
-    display:flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: 10;
+  ContentMetadata.css = style
 
-    margin-top: 0;
-    color: var(--gray);
-  }
-  `
   return ContentMetadata
 }) satisfies QuartzComponentConstructor
